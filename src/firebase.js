@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
   // 고유의 정보를 환경 파일로 바꾸어 깃 이그노이어에 추가해서 정보 보안
@@ -11,5 +12,6 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-// const app = initializeApp(firebaseConfig);
-export const firebase = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+// export const firebase = initializeApp(firebaseConfig);
+export const authService = getAuth(app);
