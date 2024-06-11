@@ -4,7 +4,7 @@ import Post from "../components/Post";
 import { collection, addDoc, serverTimestamp, getDocs, onSnapshot, query, orderBy } from "firebase/firestore"; 
 
 const Home = ({userObj}) => {
-
+    console.log(userObj);
     const [post,setPost] = useState('');
     const [posts,setPosts] = useState([]);
     const onchange = (e) =>{
@@ -68,7 +68,7 @@ const Home = ({userObj}) => {
         </form>
         <ul>
           {
-            posts.map(list => <Post key={list.id} postObj={list.content}/>)
+            posts.map(list => <Post key={list.id} postObj={list} isOwener={list.uid === userObj}/>)
           }
         </ul>
       </div>
