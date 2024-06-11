@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { db } from '../firebase';
 import Post from "../components/Post";
-import { collection, addDoc, serverTimestamp, getDocs } from "firebase/firestore"; 
+import { collection, addDoc, serverTimestamp, getDocs, onSnapshot, query, orderBy } from "firebase/firestore"; 
 
 const Home = ({userObj}) => {
 
@@ -28,6 +28,8 @@ const Home = ({userObj}) => {
       }
     }
 
+    // 데이터 반영 한번만 실시 되는 함수
+    /*
     const getPosts = async () =>{
       const querySnapshot = await getDocs(collection(db,"posts"));
       querySnapshot.forEach((doc) => {
@@ -40,8 +42,20 @@ const Home = ({userObj}) => {
       });
     }
     console.log(posts)
+    */
     useEffect(()=>{
-      getPosts();
+      const q = query(collection(db, "posts"),orderBy('date','desc')); //date를 기준으로 내림차순 정렬
+      onSnapshot(q, (querySnapshot) => {
+        console.log(querySnapshot)
+        const postArr = querySnapshot.docs.map(doc=>({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setPosts(postArr)
+      });
+
+
+      //getPosts();
     },[]);
 
     //let list = posts.map(item=><li>{item.post}</li>);
