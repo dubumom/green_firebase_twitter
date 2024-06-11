@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { db } from '../firebase';
+import Post from "../components/Post";
 import { collection, addDoc, serverTimestamp, getDocs } from "firebase/firestore"; 
 
-const Home = () => {
+const Home = ({userObj}) => {
+
     const [post,setPost] = useState('');
     const [posts,setPosts] = useState([]);
     const onchange = (e) =>{
@@ -15,8 +17,9 @@ const Home = () => {
       e.preventDefault();
       try {
         const docRef = await addDoc(collection(db, "posts"), { //await는 async가 있어야 작동
-          post, //title:post
-          date: serverTimestamp() //현재의 년월일시분초
+          content: post, //title:post
+          date: serverTimestamp(), //현재의 년월일시분초
+          uid:userObj
         });
         setPost('');
         console.log("Document written with ID: ", docRef.id);
@@ -51,7 +54,7 @@ const Home = () => {
         </form>
         <ul>
           {
-            posts.map(item=><li key={item.id}>{item.post}</li>)
+            posts.map(list => <Post key={list.id} postObj={list.content}/>)
           }
         </ul>
       </div>

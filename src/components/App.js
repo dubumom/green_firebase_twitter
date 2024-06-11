@@ -6,14 +6,15 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [init, setInit] = useState(false);
+  const [userObj, setUserObj] = useState(null);
   const auth = getAuth();
 
   useEffect(()=>{
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setIsLoggedIn(true)
-        //const uid = user.uid;
-        // ...
+        const uid = user.uid;
+        setUserObj(uid);
       } else {
         // User is signed out
         setIsLoggedIn(false)
@@ -25,7 +26,7 @@ function App() {
   return(
     <>
     {init ? 
-      <AppRouter isLoggedIn = {isLoggedIn}/>
+      <AppRouter isLoggedIn = {isLoggedIn} userObj={userObj}/>
       :"초기화 중..."
     }
     </>
