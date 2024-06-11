@@ -14,7 +14,7 @@ const Home = () => {
       e.preventDefault();
       try {
         const docRef = await addDoc(collection(db, "posts"), { //await는 async가 있어야 작동
-          title: "Ada",
+          post, //title:post
           date: serverTimestamp() //현재의 년월일시분초
         });
         setPost('');
