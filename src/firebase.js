@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/database";
 
 const firebaseConfig = {
   // 고유의 정보를 환경 파일로 바꾸어 깃 이그노이어에 추가해서 정보 보안
@@ -15,3 +16,5 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 // export const firebase = initializeApp(firebaseConfig);
 export const authService = getAuth(app);
+// Initialize Realtime Database and get a reference to the service
+export const db = getFirestore(app);
