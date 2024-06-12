@@ -27,7 +27,7 @@ const Home = ({userObj}) => {
 
     // 이미지 등록
     const inputFile = document.querySelector('#file');
-    const fileRef = ref(storage, `${userObj}/${uuidv4()}`);
+    const fileRef = ref(storage, `${userObj}/${uuidv4()}`); //파일 참조
 
     const addPost = async()=>{ // 등록하는 함수
       await addDoc(collection(db, "posts"), { //await는 async가 있어야 작동
