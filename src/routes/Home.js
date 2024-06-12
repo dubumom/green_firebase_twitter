@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { db } from '../firebase';
 import Post from "../components/Post";
 import { collection, addDoc, serverTimestamp, getDocs, onSnapshot, query, orderBy } from "firebase/firestore"; 
-import { getStorage, ref, uploadString } from "firebase/storage";
+import { getStorage, ref, uploadString, getDownloadURL } from "firebase/storage";
 import { v4 as uuidv4 } from 'uuid';
 
 const Home = ({userObj}) => {
@@ -14,6 +14,8 @@ const Home = ({userObj}) => {
   const [post,setPost] = useState('');
   const [posts,setPosts] = useState([]);
   const [attachment, setAttachment] = useState();
+  let attachmentUrl = '';
+
   const onchange = (e) =>{
     //let value = e.target.value
     const {target:{value}} = e; //비구조 할당
@@ -22,23 +24,37 @@ const Home = ({userObj}) => {
 
   const onsubmit = async (e) =>{
     e.preventDefault();
-    // try {
-    //   const docRef = await addDoc(collection(db, "posts"), { //await는 async가 있어야 작동
-    //     content: post, //title:post
-    //     date: serverTimestamp(), //현재의 년월일시분초
-    //     uid:userObj
-    //   });
-    //   setPost('');
-    //   console.log("Document written with ID: ", docRef.id);
-    // } catch (e) {
-    //   console.error("Error adding document: ", e);
-    // }
+
     // 이미지 등록
+    const inputFile = document.querySelector('#file');
     const fileRef = ref(storage, `${userObj}/${uuidv4()}`);
-    // Data URL string
-    uploadString(fileRef, attachment, 'data_url').then((snapshot) => {
-      console.log('파일 업로드 완료!');
-    });
+
+    const addPost = async()=>{ // 등록하는 함수
+      await addDoc(collection(db, "posts"), { //await는 async가 있어야 작동
+        content: post, //title:post
+        date: serverTimestamp(), //현재의 년월일시분초
+        uid:userObj,
+        attachmentUrl
+      });
+      setPost(''); // 글삭제
+      setAttachment(''); // 미리보기 이미지 삭제
+      inputFile.value = '';
+    }
+
+    try {
+      if(inputFile.value){
+        uploadString(fileRef, attachment, 'data_url').then(async(snapshot) => {
+          attachmentUrl = await getDownloadURL(fileRef);
+          addPost();
+        });
+      } else {
+        addPost();
+      }
+
+    } catch (e) {
+      alert("글 등록 실패");
+    }
+
   }
 
   // 데이터 반영 한번만 실시 되는 함수
