@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
+import Post from "../components/Post";
+import { db } from '../firebase';
 import { getAuth, signOut, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, getDocs, onSnapshot, where, query, orderBy } from "firebase/firestore"; 
 
 const Profile = () => {
   const [profileImg, setProfileImg] = useState(`${process.env.PUBLIC_URL}/profile_img.svg`);
+  const [posts,setPosts] = useState([]);
   const auth = getAuth();
   const navigate = useNavigate();
   console.log(auth);
@@ -37,6 +41,18 @@ const Profile = () => {
     //includes('') 문자가 있는지 없는지 알려주는 스크립트 함수
   },[]);
 
+  useEffect(()=>{
+    const q = query(collection(db, "posts"),where("uid", "==", auth.currentUser.uid),orderBy('date','desc'));
+    onSnapshot(q, (querySnapshot) => {
+      console.log(querySnapshot)
+      const postArr = querySnapshot.docs.map(doc=>({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setPosts(postArr)
+    });
+  },[]);
+  
   return(
     <>
     <div className="profile">
@@ -48,6 +64,11 @@ const Profile = () => {
       <button onClick={logout}>Log Out</button>
       <hr/>
       <h4>My post</h4>
+      <ul>
+        {
+          posts.map(list => <Post key={list.id} postObj={list} isOwener={list.uid === auth.currentUser.uid}/>)
+        }
+      </ul>
     </>
   )
 }
