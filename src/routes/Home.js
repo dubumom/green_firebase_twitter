@@ -7,6 +7,7 @@ const Home = ({userObj}) => {
     console.log(userObj);
     const [post,setPost] = useState('');
     const [posts,setPosts] = useState([]);
+    const [attachment, setAttachment] = useState();
     const onchange = (e) =>{
       //let value = e.target.value
       const {target:{value}} = e; //비구조 할당
@@ -60,12 +61,43 @@ const Home = ({userObj}) => {
 
     //let list = posts.map(item=><li>{item.post}</li>);
 
+    // 파일 업로드
+    const onFileChange = (e) =>{
+      //console.log(e.target.files);
+      const {target:{files}} = e;
+      const theFile = files[0];
+      // console.log(theFile);
+      const reader = new FileReader();
+      reader.onloadend = (e) => {
+        const {target:{result}} = e;
+        setAttachment(result);
+      }
+      reader.readAsDataURL(theFile);
+    }
+
+    //업로드 취소
+    const onClearFile = () =>{
+      setAttachment('');
+      document.querySelector('#file').value='';
+    }
+
     return(
       <div>
         <form action="" onSubmit={onsubmit}>
-          <input type="text" name="" value={post} placeholder="내용을 입력하세요" onChange={onchange} />
-          <input type="submit" value="Add Post" />
+          <input type="text" name="" value={post} placeholder="내용을 입력하세요" onChange={onchange} required />
+          <input type="file" accept="image/*" onChange={onFileChange} id="file"/>
+          {
+            attachment &&
+            <> 
+              <img src={attachment} width="50" alt="" />
+              <button type="button" onClick={onClearFile} >취소</button>
+            </>
+          }
+          <p>
+            <input type="submit" value="Add Post" />
+          </p>
         </form>
+        <hr/>
         <ul>
           {
             posts.map(list => <Post key={list.id} postObj={list} isOwener={list.uid === userObj}/>)
